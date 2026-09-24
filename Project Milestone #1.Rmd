@@ -1,6 +1,7 @@
 ---
 title: 'Project Milestone #1'
 output: pdf_document
+author: Ruby Yun, Jackie Zintel
 date: "2026-09-24"
 ---
 
@@ -36,5 +37,5 @@ Conflict Management:
 If a conflict arises, we will meet live via Zoom to discuss. 
 
 Time to meet with course facilitator: 
-Meet with Will Wednesday: 7:30pm-8:30pm,  20 minutes
+Meet with Will Wednesday: 7:30pm-8:30pm, 20 minutes
 
