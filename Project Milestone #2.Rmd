@@ -9,8 +9,12 @@ Final Milestone #2 Checklist
 
 **Dataset** - Jackie
 - Describe the datasource (1-2 sentences): where does the data come from, what organization / website / databased provided / what dates and time period are included?
+  The data is simulated, and the population estimates from from the CA Dept of Finance for the year 2023.
+
 - Explain how the dataset relates to our problem statement and research question explained:
-_"How did the cumulative infected cases change over time, by county, age, and sex?"_
+  **Our Research Question: How did infection rates during the simulated outbreak vary by county, age, sex, and race across       California?**
+  Our dataset contains simulated infectious disease outbreak data across CA, including number of new infections as well as     demographic and geographic characteristics. These variables allow us to examine how the burden of infection differed        across populations and locations during the outbreak. The dataset also includes 2023 CA Dept of Finance population           estimates, which provides the denominators needed to calculate infection rates rather than simply comparing case counts.
+
 
 **Import** - Jackie
 - Use correct dataset from the PHW251 Project Data GitHub repository
@@ -21,6 +25,8 @@ _"How did the cumulative infected cases change over time, by county, age, and se
 
 ```{r}
 library(tidyverse)
+library(janitor)
+#import the data
 getwd()
 ca_pop <- read.csv("../phw251_projectdata/scenario_1/ca_pop_2023.csv")
 head(ca_pop)
@@ -30,16 +36,59 @@ head(sim_ca)
 
 sim_la <- read.csv("../phw251_projectdata/scenario_1/sim_novelid_LACounty.csv")
 head(sim_la)
+
+#clean the column names
+ca_pop <- ca_pop %>%
+  clean_names()
+sim_ca <- sim_ca %>%
+  clean_names()
+sim_la <- sim_la %>%
+  clean_names()
+
 ```
 
 **Variables & Data Types** - Jackie
-- At least 5 variables selected: county, dt_diagnosis, age_cat, new_infections, cumulative_infected, pop, sex
+- At least 5 variables selected: _county,age_cat, sex, race_eth, new_infections, pop_
 - Identify current data type for each variable
+```{r}
+sapply(ca_pop, class)
+sapply(sim_ca, class)
+sapply(sim_la, class)
+
+```
+
 - Determine the desired data type/format for analysis
 - Decided whether the variable needs to be converted
 
-**Descriptive Statistics** - Ruby
+Desired data types for analysis:
+
+County, age category, sex, and race: character/categorical
+Population and infection/severity counts: integer/numeric
+Diagnosis/report dates: Date
+Time/week variables: integer
+
+Variables that need conversion/cleaning:
+
+sim_ca$race_ethnicity: currently integer codes (1, 2, 3, 4, etc.)
+Need to recode as character race categories that match ca_pop$race7 (e.g., "Black NH").
+sim_ca$dt_diagnosis: character needs to be converted to Date
+
+
+**Descriptive Statistics** - Ruby 
 - Basic description provided for all 5+ variables
+
+(Jackie)
+county: County for population
+age_cat: Age Category
+sex: Sex 
+race_ethnicity: Race-ethnicity categorization as defined by CA Dept of Finance 
+  1 = "White, Non-Hispanic", 2 = "Black, Non-Hispanic", 3 = "American Indian or Alaska Native, Non-Hispanic", 4 = "Asian,     Non-Hispanic", 5 = "Native Hawaiian or Pacific Islander, Non-Hispanic", 6 = "Multiracial (two or more of above races),       Non-Hispanic", 7 = "Hispanic (any race)", 9 = "Unknown)
+
+new_infections: Number of newly diagnosed individuals
+pop: CA Dept of Finance estimated all ages population for year 2023
+
+
+
 - Numeric variables: mean, median, range
 - Character/categorical variables: unique values/categories
 - Other appropriate descriptives used when needed
