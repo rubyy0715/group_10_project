@@ -3,42 +3,55 @@ title: "Project Milestone #2"
 author: "Ruby Yun, Jackie Zintel"
 date: "2026-09-30"
 output: html_document
-editor_options: 
-  markdown: 
 ---
 
 Final Milestone #2 Checklist 
 
-**Dataset**
+**Dataset** - Jackie
 - Describe the datasource (1-2 sentences): where does the data come from, what organization / website / databased provided / what dates and time period are included?
-- Explain how the dataset relates to our problem statement and research question explained
+- Explain how the dataset relates to our problem statement and research question explained:
+_"How did the cumulative infected cases change over time, by county, age, and sex?"_
 
-**Import**
+**Import** - Jackie
 - Use correct dataset from the PHW251 Project Data GitHub repository
 - Appropriate package/function and relevant import arguments used (col types, col names, missing value specifications, etc.)
 - Import process documented
 - Column names cleaned (snake case)
 
-**Variables & Data Types**
-- At least 5 variables selected***
+
+```{r}
+library(tidyverse)
+getwd()
+ca_pop <- read.csv("../phw251_projectdata/scenario_1/ca_pop_2023.csv")
+head(ca_pop)
+
+sim_ca <- read.csv("../phw251_projectdata/scenario_1/sim_novelid_CA.csv")
+head(sim_ca)
+
+sim_la <- read.csv("../phw251_projectdata/scenario_1/sim_novelid_LACounty.csv")
+head(sim_la)
+```
+
+**Variables & Data Types** - Jackie
+- At least 5 variables selected: county, dt_diagnosis, age_cat, new_infections, cumulative_infected, pop, sex
 - Identify current data type for each variable
 - Determine the desired data type/format for analysis
 - Decided whether the variable needs to be converted
 
-**Descriptive Statistics**
+**Descriptive Statistics** - Ruby
 - Basic description provided for all 5+ variables
 - Numeric variables: mean, median, range
 - Character/categorical variables: unique values/categories
 - Other appropriate descriptives used when needed
 
-**Data Cleaning**
+**Data Cleaning** - Ruby
 - Variables that need to be converted (e.g., chr -> numeric)
 - Values that need to be cleaned (e.g., Male, male, M)
 - Re-categorization
 - Missing values identified (e.g., NA, Unknown, N/A, etc.)
 - Variables that may be useful for future joins (e.g., geographic variables)
 
-**Final Submission**
+**Final Submission** - Ruby
 - Rmd or Qmd completed
 - R code & output included
 - Rendered to HTML
