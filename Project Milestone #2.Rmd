@@ -10,7 +10,8 @@ Final Milestone #2
 **1. Description of dataset**
 - We used scenario_1 datasets from the PHW251 Project Data GitHub repository.
 - The data is simulated, and the population estimates from from the CA Dept of Finance for the year 2023.
-- Research Question: How did infection rates during the simulated outbreak vary by county, age, sex, and race across California?
+- Research Question:
+  - How did infection rates during the simulated outbreak vary by county, age, sex, and race across California?
 - Our dataset contains simulated infectious disease outbreak data across CA, including number of new infections as well as demographic and geographic characteristics.These variables allow us to examine how the burden of infection differed across populations and locations during the outbreak. The dataset also includes 2023 CA Dept of Finance population estimates, which provides the denominators needed to calculate infection rates rather than simply comparing case counts.
 
 **2. Import dataset**
@@ -53,30 +54,35 @@ sapply(sim_la, class)
 
 ```
 
-- We chose the following variables: county, age_cat, sex, race_ethnicity, new_infections, pop
+- We chose the following variables: county, age category, sex, race/ethnicity, number of new infections, population
 
 - Desired data types for analysis
-  - County, age category, sex, and race: character/categorical
-  - Population and infection/severity counts: integer/numeric
-  - Diagnosis/report dates: Date
-  - Time/week variables: integer
+  - County, age category, sex, and race/ethnicity: character/categorical
+  - Population and number of new infections: integer/numeric
 
 - Variables that need conversion/cleaning:
   - sim_ca$race_ethnicity: currently integer codes (1, 2, 3, 4, etc.)
-  - Need to recode as character race categories that match ca_pop$race7 (e.g., "Black NH").
-  - sim_ca$dt_diagnosis: character needs to be converted to Date
+  - Need to recode as character race categories that match ca_pop$race7 (e.g., "Black NH")
+  - County names will need to be standardized across datasets before joining
 
 \newpage
 
 **4. Descriptive Statistics**
 
 - Basic description provided for all 5+ variables
-  - county: County for population
-  - age_cat: Age Category
-  - sex: Sex 
+  - county: county names
+  - age_cat: age category
+  - sex: male/female
   - race_ethnicity: Race-ethnicity categorization as defined by CA Dept of Finance 
-1 = "White, Non-Hispanic", 2 = "Black, Non-Hispanic", 3 = "American Indian or Alaska Native, Non-Hispanic", 4 = "Asian, Non-Hispanic", 5 = "Native Hawaiian or Pacific Islander, Non-Hispanic", 6 = "Multiracial (two or more of above races),       Non-Hispanic", 7 = "Hispanic (any race)", 9 = "Unknown)
-  - new_infections: Number of newly diagnosed individuals
+  1 = "White, Non-Hispanic"
+  2 = "Black, Non-Hispanic"
+  3 = "American Indian or Alaska Native, Non-Hispanic"
+  4 = "Asian, Non-Hispanic"
+  5 = "Native Hawaiian or Pacific Islander, Non-Hispanic"
+  6 = "Multiracial (two or more of above races), Non-Hispanic"
+  7 = "Hispanic (any race)"
+  9 = "Unknown)
+  - new_infections: number of newly diagnosed individuals
   - pop: CA Dept of Finance estimated all ages population for year 2023
 
 - Numeric variables: mean, median, range
@@ -89,44 +95,77 @@ ca_numeric <- c(mean = mean(ca_pop$pop, na.rm = T),
                 max = max(ca_pop$pop, na.rm = T))
 round(ca_numeric, 2)
 
-paste("Mean, median, and range of new infections")
+paste("Mean, median, and range of new infections across different counties")
 sim_ca_numeric <- c(mean = mean(sim_ca$new_infections, na.rm = T),
                 median = median(sim_ca$new_infections, na.rm = T),
                 min = min(sim_ca$new_infections, na.rm = T),
                 max = max(sim_ca$new_infections, na.rm = T))
 round(sim_ca_numeric, 2)
 
+paste("Mean, median, and range of new infections in LA county")
+sim_la_numeric <- c(mean = mean(sim_la$dx_new, na.rm = T),
+                median = median(sim_la$dx_new, na.rm = T),
+                min = min(sim_la$dx_new, na.rm = T),
+                max = max(sim_la$dx_new, na.rm = T))
+round(sim_la_numeric, 2)
+
 ```
 
 - Character/categorical variables: unique values/categories
 
 ```{r chr/cat variables}
-unique(ca_pop$county)
-unique(ca_pop$age_cat)
-unique(ca_pop$sex)
-unique(sim_ca$race_ethnicity)
+
+lapply(ca_pop[c("county", "age_cat", "sex", "race7")], unique)
+lapply(sim_ca[c("county", "age_cat", "sex", "race_ethnicity")], unique)
+
 ```
 
 \newpage
 
 **5. Data Cleaning**
 
-```{r join the datasets}
+- Convert variable
 
+```{r convert race/ethnicity}
 
+sim_ca <- sim_ca %>% mutate(
+  race_ethnicity = case_when(
+    race_ethnicity == 1 ~ "WhiteTE NH",
+    race_ethnicity == 2 ~ "Black NH",
+    race_ethnicity == 3 ~ "AIAN NH",
+    race_ethnicity == 4 ~ "Asian NH",
+    race_ethnicity == 5 ~ "NHPI NH",
+    race_ethnicity == 6 ~ "MR NH",
+    race_ethnicity == 7 ~ "Hispanic"
+    )
+  )
+
+unique(sim_ca$race_ethnicity)
 
 ```
 
-- Variables that need to be converted (e.g., chr -> numeric)
-- Values that need to be cleaned (e.g., Male, male, M)
-- Re-categorization
-- Missing values identified (e.g., NA, Unknown, N/A, etc.)
+```{r convert county names}
+
+sim_ca$county <- str_remove(sim_ca$county, " County$")
+
+unique(sim_ca$county)
+
+```
+
+- Recategorize age groups
+
+```{r recategorize}
+
+ca_pop <- ca_pop %>%
+  mutate(age_cat = case_when(
+    age_cat %in% c("0-4", "5-11", "12-17") ~ "0-17",
+    .default = age_cat)
+  )
+
+unique(ca_pop$age_cat)
+
+```
+
 - Variables that may be useful for future joins (e.g., geographic variables)
+  - LA county dataset (sim_la) will need to be merged into sim_ca
 
-\newpage
-
-**6. Final Submission**
-- Rmd or Qmd completed
-- R code & output included
-- Rendered to HTML
-- HTML uploaded/submitted through GitHub
