@@ -1,32 +1,25 @@
 ---
 title: "Project Milestone #2"
-author: "Ruby Yun, Jackie Zintel"
+author: "Group 10: Ruby Yun, Jackie Zintel"
 date: "2026-09-30"
 output: html_document
 ---
 
-Final Milestone #2 Checklist 
+Final Milestone #2
 
-**Dataset** - Jackie
-- Describe the datasource (1-2 sentences): where does the data come from, what organization / website / databased provided / what dates and time period are included?
-  The data is simulated, and the population estimates from from the CA Dept of Finance for the year 2023.
+**1. Description of dataset**
+- We used scenario_1 datasets from the PHW251 Project Data GitHub repository.
+- The data is simulated, and the population estimates from from the CA Dept of Finance for the year 2023.
+- Research Question: How did infection rates during the simulated outbreak vary by county, age, sex, and race across California?
+- Our dataset contains simulated infectious disease outbreak data across CA, including number of new infections as well as demographic and geographic characteristics.These variables allow us to examine how the burden of infection differed across populations and locations during the outbreak. The dataset also includes 2023 CA Dept of Finance population estimates, which provides the denominators needed to calculate infection rates rather than simply comparing case counts.
 
-- Explain how the dataset relates to our problem statement and research question explained:
-  **Our Research Question: How did infection rates during the simulated outbreak vary by county, age, sex, and race across       California?**
-  Our dataset contains simulated infectious disease outbreak data across CA, including number of new infections as well as     demographic and geographic characteristics. These variables allow us to examine how the burden of infection differed        across populations and locations during the outbreak. The dataset also includes 2023 CA Dept of Finance population           estimates, which provides the denominators needed to calculate infection rates rather than simply comparing case counts.
-
-
-**Import** - Jackie
-- Use correct dataset from the PHW251 Project Data GitHub repository
-- Appropriate package/function and relevant import arguments used (col types, col names, missing value specifications, etc.)
-- Import process documented
-- Column names cleaned (snake case)
-
+**2. Import dataset**
 
 ```{r}
 library(tidyverse)
 library(janitor)
-#import the data
+
+#import datasets
 getwd()
 ca_pop <- read.csv("../phw251_projectdata/scenario_1/ca_pop_2023.csv")
 head(ca_pop)
@@ -47,60 +40,92 @@ sim_la <- sim_la %>%
 
 ```
 
-**Variables & Data Types** - Jackie
-- At least 5 variables selected: _county,age_cat, sex, race_eth, new_infections, pop_
-- Identify current data type for each variable
+\newpage
+
+**3. Data types and variables**
+
 ```{r}
+
+# Identify all the variables in each dataset
 sapply(ca_pop, class)
 sapply(sim_ca, class)
 sapply(sim_la, class)
 
 ```
 
-- Determine the desired data type/format for analysis
-- Decided whether the variable needs to be converted
+- We chose the following variables: county, age_cat, sex, race_ethnicity, new_infections, pop
 
-Desired data types for analysis:
+- Desired data types for analysis
+  - County, age category, sex, and race: character/categorical
+  - Population and infection/severity counts: integer/numeric
+  - Diagnosis/report dates: Date
+  - Time/week variables: integer
 
-County, age category, sex, and race: character/categorical
-Population and infection/severity counts: integer/numeric
-Diagnosis/report dates: Date
-Time/week variables: integer
+- Variables that need conversion/cleaning:
+  - sim_ca$race_ethnicity: currently integer codes (1, 2, 3, 4, etc.)
+  - Need to recode as character race categories that match ca_pop$race7 (e.g., "Black NH").
+  - sim_ca$dt_diagnosis: character needs to be converted to Date
 
-Variables that need conversion/cleaning:
+\newpage
 
-sim_ca$race_ethnicity: currently integer codes (1, 2, 3, 4, etc.)
-Need to recode as character race categories that match ca_pop$race7 (e.g., "Black NH").
-sim_ca$dt_diagnosis: character needs to be converted to Date
+**4. Descriptive Statistics**
 
-
-**Descriptive Statistics** - Ruby 
 - Basic description provided for all 5+ variables
-
-(Jackie)
-county: County for population
-age_cat: Age Category
-sex: Sex 
-race_ethnicity: Race-ethnicity categorization as defined by CA Dept of Finance 
-  1 = "White, Non-Hispanic", 2 = "Black, Non-Hispanic", 3 = "American Indian or Alaska Native, Non-Hispanic", 4 = "Asian,     Non-Hispanic", 5 = "Native Hawaiian or Pacific Islander, Non-Hispanic", 6 = "Multiracial (two or more of above races),       Non-Hispanic", 7 = "Hispanic (any race)", 9 = "Unknown)
-
-new_infections: Number of newly diagnosed individuals
-pop: CA Dept of Finance estimated all ages population for year 2023
-
-
+  - county: County for population
+  - age_cat: Age Category
+  - sex: Sex 
+  - race_ethnicity: Race-ethnicity categorization as defined by CA Dept of Finance 
+1 = "White, Non-Hispanic", 2 = "Black, Non-Hispanic", 3 = "American Indian or Alaska Native, Non-Hispanic", 4 = "Asian, Non-Hispanic", 5 = "Native Hawaiian or Pacific Islander, Non-Hispanic", 6 = "Multiracial (two or more of above races),       Non-Hispanic", 7 = "Hispanic (any race)", 9 = "Unknown)
+  - new_infections: Number of newly diagnosed individuals
+  - pop: CA Dept of Finance estimated all ages population for year 2023
 
 - Numeric variables: mean, median, range
-- Character/categorical variables: unique values/categories
-- Other appropriate descriptives used when needed
 
-**Data Cleaning** - Ruby
+```{r numeric variables}
+paste("Mean, median, and range of California population")
+ca_numeric <- c(mean = mean(ca_pop$pop, na.rm = T),
+                median = median(ca_pop$pop, na.rm = T),
+                min = min(ca_pop$pop, na.rm = T),
+                max = max(ca_pop$pop, na.rm = T))
+round(ca_numeric, 2)
+
+paste("Mean, median, and range of new infections")
+sim_ca_numeric <- c(mean = mean(sim_ca$new_infections, na.rm = T),
+                median = median(sim_ca$new_infections, na.rm = T),
+                min = min(sim_ca$new_infections, na.rm = T),
+                max = max(sim_ca$new_infections, na.rm = T))
+round(sim_ca_numeric, 2)
+
+```
+
+- Character/categorical variables: unique values/categories
+
+```{r chr/cat variables}
+unique(ca_pop$county)
+unique(ca_pop$age_cat)
+unique(ca_pop$sex)
+unique(sim_ca$race_ethnicity)
+```
+
+\newpage
+
+**5. Data Cleaning**
+
+```{r join the datasets}
+
+
+
+```
+
 - Variables that need to be converted (e.g., chr -> numeric)
 - Values that need to be cleaned (e.g., Male, male, M)
 - Re-categorization
 - Missing values identified (e.g., NA, Unknown, N/A, etc.)
 - Variables that may be useful for future joins (e.g., geographic variables)
 
-**Final Submission** - Ruby
+\newpage
+
+**6. Final Submission**
 - Rmd or Qmd completed
 - R code & output included
 - Rendered to HTML
