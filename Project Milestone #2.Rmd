@@ -23,21 +23,23 @@ library(janitor)
 #import datasets
 getwd()
 ca_pop <- read.csv("../phw251_projectdata/scenario_1/ca_pop_2023.csv")
-head(ca_pop)
 
 sim_ca <- read.csv("../phw251_projectdata/scenario_1/sim_novelid_CA.csv")
-head(sim_ca)
 
 sim_la <- read.csv("../phw251_projectdata/scenario_1/sim_novelid_LACounty.csv")
-head(sim_la)
 
 #clean the column names
 ca_pop <- ca_pop %>%
   clean_names()
+head(ca_pop)
+
 sim_ca <- sim_ca %>%
   clean_names()
+head(sim_ca)
+
 sim_la <- sim_la %>%
   clean_names()
+head(sim_la)
 
 ```
 
@@ -152,6 +154,20 @@ unique(sim_ca$county)
 
 ```
 
+```{r rename columns}
+
+ca_pop <- ca_pop %>% rename(race_ethnicity = race7)
+
+sim_la <- sim_la %>% rename(new_infections = dx_new,
+                            race_ethnicity = race_eth,
+                            age_cat = age_category)
+
+colnames(ca_pop)
+colnames(sim_ca)
+colnames(sim_la)
+
+```
+
 - Recategorize age groups
 
 ```{r recategorize}
@@ -167,5 +183,5 @@ unique(ca_pop$age_cat)
 ```
 
 - Variables that may be useful for future joins (e.g., geographic variables)
-  - LA county dataset (sim_la) will need to be merged into sim_ca
+  - The LA County dataset (sim_la) will need to be merged into sim_ca, as sim_ca is currently missing LA County data.
 
