@@ -14,7 +14,7 @@ The sim_novelid_CA.csv file and sim_novelid_LACounty.csv file together represent
 **Morbidity datasets (from CA and LA County)
   - Recode column names, values, or formats that are in discordant (+) - Ruby
   
-  - Combine morbidity datasets into a single dataset - Jackie
+  - Combine morbidity datasets into a single dataset - Jackie (JZ)
   - Select demographic and geographic strata (s) of interest - Ruby
   - Aggregate the data into a new dataframe to include only one row per strata of interest - Ruby
   
@@ -33,14 +33,14 @@ For all scenarios, please turn in an html document with the following components
 *Subset rows or columns, as needed
 *Create new variables needed for analysis (minimum 2)
 New variables should be created based on existing columns; for example
-  - Calculating a rate 
+  - Calculating a rate (JZ)
   - Combining character strings
-  - Aggregation
+  - Aggregation (JZ)
 *Clean variables needed for analysis (minimum 2)
-  - Recode invalid values
-  - Handle missing data
+  - Recode invalid values (JZ)
+  - Handle missing data (JZ)
   - Recode categories (+)
-*Data re-structured as needed (aggregated/summarized and/or pivoted)
+*Data re-structured as needed (aggregated/summarized and/or pivoted) (JZ)
 
 <Jackie>----------
 *Data dictionary based on clean dataset (minimum 4 data elements - we have 6 variables!), including:
@@ -246,6 +246,158 @@ unique(ca_pop$age_cat)
   - The LA County dataset (sim_la) will need to be merged into sim_ca, as sim_ca is currently missing LA County data.
 
 
+-Cleaning and merging the datasets (Jackie)
+
+```{r standarize variables}
+
+library(lubridate)
+# Convert sim_ca date (YYYY-MM-DD)
+sim_ca <- sim_ca %>%
+  mutate(dt_diagnosis = ymd(dt_diagnosis))
+
+# Convert sim_la date (DDMMMYYYY)
+sim_la <- sim_la %>%
+  mutate(dt_dx = dmy(dt_dx))
+
+sim_la <- sim_la %>%
+  rename(dt_diagnosis = dt_dx)
+
+#rename variables
+sim_la_clean <- sim_la %>%
+  rename(
+    cumulative_infected = infected_cumulative,
+    new_unrecovered = unrecovered_new,
+    cumulative_unrecovered = unrecovered_cumulative,
+    new_severe = severe_new, 
+    cumulative_severe = severe_cumulative
+  ) %>%
+  mutate(
+    county = "Los Angeles"
+  )
+
+#recategorize ethnicity so that datasets match each other
+sim_la_clean <- sim_la_clean %>%
+  mutate(
+    race_ethnicity = case_when(
+      race_ethnicity == "White, Non-Hispanic" ~ "WhiteTE NH",
+      race_ethnicity == "Black, Non-Hispanic" ~ "Black NH",
+      race_ethnicity == "American Indian or Alaska Native, Non-Hispanic" ~ "AIAN NH",
+      race_ethnicity == "Asian, Non-Hispanic" ~ "Asian NH",
+      race_ethnicity == "Native Hawaiian or Pacific Islander, Non-Hispanic" ~ "NHPI NH",
+      race_ethnicity == "Multiracial (two or more of above races), Non-Hispanic" ~ "MR NH",
+      race_ethnicity == "Hispanic (any race)" ~ "Hispanic",
+      TRUE ~ race_ethnicity
+    )
+  )
+
+sim_ca <- sim_ca %>%
+  mutate(
+    race_ethnicity = recode(
+      race_ethnicity,
+      "WhiteTE NH" = "White NH"
+    )
+  )
+
+sim_la_clean <- sim_la_clean %>%
+  mutate(
+    race_ethnicity = recode(
+      race_ethnicity,
+      "WhiteTE NH" = "White NH"
+    )
+  )
+
+ca_pop <- ca_pop %>%
+  mutate(
+    race_ethnicity = recode(
+      race_ethnicity,
+      "WhiteTE NH" = "White NH"
+    )
+    )
+
+
+
+```
+
+
+```{r combine infection databases}
+
+sim_combined <- bind_rows(
+  sim_ca,
+  sim_la_clean
+)
+
+glimpse(sim_combined)
+```
+
+
+
+```{r clean ca_pop data}
+ca_pop_clean <- ca_pop %>%
+  group_by(
+    county,
+    age_cat,
+    sex,
+    race_ethnicity
+  ) %>%
+  summarise(
+    population = sum(pop, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+
+
+```{r join population data}
+
+combined_data <- sim_combined %>%
+  left_join(
+    ca_pop_clean,
+    by = c(
+      "county",
+      "age_cat",
+      "sex",
+      "race_ethnicity"
+    ),
+    relationship = "many-to-one"
+  )
+
+```
+
+We've now created a combined dataset! However, there are extra variables that we don't need in order to answer our research question. I'm going clean up the dataset and simplify it to only include relevant information:
+
+```{r simplify combined dataset}
+combined_data_clean <- combined_data %>%
+  select(
+    county,
+    age_cat,
+    sex,
+    race_ethnicity,
+    dt_diagnosis,
+    new_infections,
+    population
+  )
+
+```
+
+Now we can calculate infection rates: 
+
+```{r Infection Rate}
+
+#Total infections per 100,000 population during the simulated outbreak
+infection_rates <- combined_data_clean %>%
+  group_by(county, age_cat, sex, race_ethnicity) %>%
+  summarise(
+    total_infections = sum(new_infections, na.rm = TRUE),
+    population = first(population),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    infection_rate = round(
+      total_infections / population * 100000, 1
+    )
+  )
+
+```
 
 ----------
 Our next meeting for Project Milestone #4 - Nov 18 at 7PM
