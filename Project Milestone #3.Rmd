@@ -2,7 +2,7 @@
 title: 'Project Milestone #3'
 author: "Group 10: Ruby Yun, Jackie Zintel"
 output: html_document
-date: "2026-11-04"
+date: "2026-11-08"
 ---
 
 Project Milestone #3  
@@ -12,92 +12,76 @@ For Scenario 1: Infectious disease outbreak (simulated) in California
 The sim_novelid_CA.csv file and sim_novelid_LACounty.csv file together represent simulated morbidity for the entire state of California. While it’s certainly possible for data from different sources to adhere to a format standard, one of the challenges of working with secondary data is that it often does not work out that way. Therefore to prepare each dataset (milestone #3) so that they can be combined into one, whole state, dataset you will need to do the following:
 
 **Morbidity datasets (from CA and LA County)
-  - Recode column names, values, or formats that are in discordant (+) - Ruby
-  
-  - Combine morbidity datasets into a single dataset - Jackie (JZ)
+  - Recode column names, values, or formats that are in discordant - Ruby
+  - Combine morbidity datasets into a single dataset - Jackie
   - Select demographic and geographic strata (s) of interest - Ruby
   - Aggregate the data into a new dataframe to include only one row per strata of interest - Ruby
   
 **Population dataset
-  - Recode values to be consistent with morbidity datasets so they can be joined (+) - Ruby
-
-<Jackie>---------- draft!
-Joining the datasets into one dataset
-  
-<Ruby>---------- at least by Saturday!!
-  - Select demographic or geographic strata(s) of interest: county, age, sex, and race
-  - Create a rate metric and summarize to include only one row per strata of interest: new infection cases by demographic or geographic strata -> use `summarize()` and `group_by()`
+  - Recode values to be consistent with morbidity datasets so they can be joined - Ruby
+  - Select demographic or geographic strata(s) of interest: county, age, sex, and race - Jackie
+  - Create a rate metric and summarize to include only one row per strata of interest:
+  new infection cases by demographic or geographic strata -> use `summarize()` and `group_by()` - Jackie & Ruby
   
 For all scenarios, please turn in an html document with the following components:
 
-*Subset rows or columns, as needed
-*Create new variables needed for analysis (minimum 2)
-New variables should be created based on existing columns; for example
-  - Calculating a rate (JZ)
-  - Combining character strings
-  - Aggregation (JZ)
-*Clean variables needed for analysis (minimum 2)
-  - Recode invalid values (JZ)
-  - Handle missing data (JZ)
-  - Recode categories (+)
-*Data re-structured as needed (aggregated/summarized and/or pivoted) (JZ)
+*Subset rows or columns, as needed - Jackie
+*Create new variables needed for analysis (minimum 2): new variables should be created based on existing columns - Jackie & Ruby
+*Clean variables needed for analysis (minimum 2) - Jackie & Ruby
+  - Recode invalid values - Jackie
+  - Handle missing data - Jackie & Ruby
+  - Recode categories - Jackie & Ruby
+*Data re-structured as needed (aggregated/summarized and/or pivoted) - Jackie & Ruby
 
-<Jackie>----------
-*Data dictionary based on clean dataset (minimum 4 data elements - we have 6 variables!), including:
-  - Variable name
-  - Data type
-  - Description
-  
-Data dictionary incudes:
-Table & Field Names: The exact names used in the database
-Data Types: What kind (type, class) of data is allowed
-Descriptions/Definitions: A clear explanation of what each field represents
-Constraints & Rules: Restrictions on the data
-Relationships: How tables connect to one another
+*Data dictionary based on clean dataset (minimum 4 data elements), including variable name, data type, and description
+  - Table & Field Names: The exact names used in the database - Ruby
+  - Data Types: What kind (type, class) of data is allowed - Ruby
+  - Descriptions/Definitions: A clear explanation of what each field represents - Ruby
+  - Constraints & Rules: Restrictions on the data - Ruby
+  - Relationships: How tables connect to one another - Jackie
 
-*One or more tables with descriptive statistics for 4 data elements (we have 6 variables!)
-Tables + ggplot2
+*One or more tables with descriptive statistics for 4 data elements - Ruby
+  - Tables + ggplot2
+
 *Html output that is professionally prepared for presentation
-  - Only the necessary information is outputted
-  - Use of headers and sub headers to create an organized document
+  - Only the necessary information is outputted - Ruby (use `echo=TRUE` and `results='hide'` for some unnecessary outputs)
+  - Use of headers and sub headers to create an organized document - Ruby
+  
+--------------------------------------------------------------------------------
 
--------------------------
+**1. Introduction**
+This project uses simulated infectious disease outbreak data from Scenario 1 of the PHW251 Project Data GitHub repository to examine the distribution of infections across California.
+Our primary research question is: How did infection rates during the outbreak vary by county, age, sex and race/ethnicity across California?
 
-Project Milestone #2
+The datasets include simulated morbidity data from California and Los Angeles County, containing information on new infection cases and individual demographic and geographic characteristics.
+Additionally, the analysis incorporates 2023 California Department of Finance population estimates. This dataset provide the denominators needed to calculate infection rates per 100,000 population, allowing for more meaningful comparisons across demographic and geographic groups.
 
-**1. Description of dataset**
-- We used scenario_1 datasets from the PHW251 Project Data GitHub repository.
-- The data is simulated, and the population estimates from from the CA Dept of Finance for the year 2023.
-- Research Question:
-  - How did infection rates during the simulated outbreak vary by county, age, sex, and race across California?
-- Our dataset contains simulated infectious disease outbreak data across CA, including number of new infections as well as demographic and geographic characteristics.These variables allow us to examine how the burden of infection differed across populations and locations during the outbreak. The dataset also includes 2023 CA Dept of Finance population estimates, which provides the denominators needed to calculate infection rates rather than simply comparing case counts.
+By combining morbidity and population data, this project aims to identify variations in infection rates across California counties and demographic groups during the simulated outbreak.
 
 **2. Import dataset**
 
-```{r}
+```{r, echo=TRUE, results='hide'}
 library(tidyverse)
 library(janitor)
 
 #import datasets
 getwd()
 ca_pop <- read.csv("../phw251_projectdata/scenario_1/ca_pop_2023.csv")
-
 sim_ca <- read.csv("../phw251_projectdata/scenario_1/sim_novelid_CA.csv")
-
 sim_la <- read.csv("../phw251_projectdata/scenario_1/sim_novelid_LACounty.csv")
 
 #clean the column names
 ca_pop <- ca_pop %>%
   clean_names()
-head(ca_pop)
+colnames(ca_pop)
 
 sim_ca <- sim_ca %>%
   clean_names()
-head(sim_ca)
+colnames(sim_ca)
 
 sim_la <- sim_la %>%
   clean_names()
-head(sim_la)
+colnames(sim_la)
 
 ```
 
@@ -105,7 +89,7 @@ head(sim_la)
 
 **3. Data types and variables**
 
-```{r}
+```{r, echo=TRUE, results='hide'}
 
 # Identify all the variables in each dataset
 sapply(ca_pop, class)
@@ -127,70 +111,44 @@ sapply(sim_la, class)
 
 \newpage
 
-**4. Descriptive Statistics**
+**4. Data Cleaning**
 
-- Basic description provided for all 5+ variables
-  - county: county names
-  - age_cat: age category
-  - sex: male/female
-  - race_ethnicity: Race-ethnicity categorization as defined by CA Dept of Finance 
-  1 = "White, Non-Hispanic"
-  2 = "Black, Non-Hispanic"
-  3 = "American Indian or Alaska Native, Non-Hispanic"
-  4 = "Asian, Non-Hispanic"
-  5 = "Native Hawaiian or Pacific Islander, Non-Hispanic"
-  6 = "Multiracial (two or more of above races), Non-Hispanic"
-  7 = "Hispanic (any race)"
-  9 = "Unknown)
-  - new_infections: number of newly diagnosed individuals
-  - pop: CA Dept of Finance estimated all ages population for year 2023
+1) Convert variables
 
-- Numeric variables: mean, median, range
+- Rename columns
 
-```{r numeric variables}
-paste("Mean, median, and range of California population")
-ca_numeric <- c(mean = mean(ca_pop$pop, na.rm = T),
-                median = median(ca_pop$pop, na.rm = T),
-                min = min(ca_pop$pop, na.rm = T),
-                max = max(ca_pop$pop, na.rm = T))
-round(ca_numeric, 2)
+```{r rename columns, echo=TRUE, results='hide'}
 
-paste("Mean, median, and range of new infections across different counties")
-sim_ca_numeric <- c(mean = mean(sim_ca$new_infections, na.rm = T),
-                median = median(sim_ca$new_infections, na.rm = T),
-                min = min(sim_ca$new_infections, na.rm = T),
-                max = max(sim_ca$new_infections, na.rm = T))
-round(sim_ca_numeric, 2)
+ca_pop <- ca_pop %>% rename(race_ethnicity = race7)
 
-paste("Mean, median, and range of new infections in LA county")
-sim_la_numeric <- c(mean = mean(sim_la$dx_new, na.rm = T),
-                median = median(sim_la$dx_new, na.rm = T),
-                min = min(sim_la$dx_new, na.rm = T),
-                max = max(sim_la$dx_new, na.rm = T))
-round(sim_la_numeric, 2)
+sim_la <- sim_la %>% rename(new_infections = dx_new,
+                            race_ethnicity = race_eth,
+                            age_cat = age_category)
 
+sim_la <- sim_la %>%
+  rename(
+    cumulative_infected = infected_cumulative,
+    new_unrecovered = unrecovered_new,
+    cumulative_unrecovered = unrecovered_cumulative,
+    new_severe = severe_new, 
+    cumulative_severe = severe_cumulative
+  ) %>%
+  mutate(
+    county = "Los Angeles"
+  )
+
+colnames(ca_pop)
+colnames(sim_ca)
+colnames(sim_la)
 ```
 
-- Character/categorical variables: unique values/categories
+- Race/ethnicity
 
-```{r chr/cat variables}
-
-lapply(ca_pop[c("county", "age_cat", "sex", "race7")], unique)
-lapply(sim_ca[c("county", "age_cat", "sex", "race_ethnicity")], unique)
-
-```
-
-\newpage
-
-**5. Data Cleaning**
-
-- Convert variable
-
-```{r convert race/ethnicity}
+```{r convert race/ethnicity, echo=TRUE, results='hide'}
 
 sim_ca <- sim_ca %>% mutate(
   race_ethnicity = case_when(
-    race_ethnicity == 1 ~ "WhiteTE NH",
+    race_ethnicity == 1 ~ "White NH",
     race_ethnicity == 2 ~ "Black NH",
     race_ethnicity == 3 ~ "AIAN NH",
     race_ethnicity == 4 ~ "Asian NH",
@@ -202,34 +160,47 @@ sim_ca <- sim_ca %>% mutate(
 
 unique(sim_ca$race_ethnicity)
 
+sim_la <- sim_la %>%
+  mutate(
+    race_ethnicity = case_when(
+      race_ethnicity == "White, Non-Hispanic" ~ "White NH",
+      race_ethnicity == "Black, Non-Hispanic" ~ "Black NH",
+      race_ethnicity == "American Indian or Alaska Native, Non-Hispanic" ~ "AIAN NH",
+      race_ethnicity == "Asian, Non-Hispanic" ~ "Asian NH",
+      race_ethnicity == "Native Hawaiian or Pacific Islander, Non-Hispanic" ~ "NHPI NH",
+      race_ethnicity == "Multiracial (two or more of above races), Non-Hispanic" ~ "MR NH",
+      race_ethnicity == "Hispanic (any race)" ~ "Hispanic",
+      TRUE ~ race_ethnicity
+    ))
+
+unique(sim_la$race_ethnicity)
+
+ca_pop <- ca_pop %>%
+  mutate(
+    race_ethnicity = recode(
+      race_ethnicity,
+      "WhiteTE NH" = "White NH"
+    )
+  )
+
+unique(ca_pop$race_ethnicity)
 ```
 
+- County names
 
-```{r convert county names}
+```{r convert county names, echo=TRUE, results='hide'}
 
 sim_ca$county <- str_remove(sim_ca$county, " County$")
 
+unique(sim_la$county)
 unique(sim_ca$county)
+unique(ca_pop$county)
 
 ```
 
-```{r rename columns}
+2) Recategorize age groups
 
-ca_pop <- ca_pop %>% rename(race_ethnicity = race7)
-
-sim_la <- sim_la %>% rename(new_infections = dx_new,
-                            race_ethnicity = race_eth,
-                            age_cat = age_category)
-
-colnames(ca_pop)
-colnames(sim_ca)
-colnames(sim_la)
-
-```
-
-- Recategorize age groups
-
-```{r recategorize}
+```{r recategorize age groups}
 
 ca_pop <- ca_pop %>%
   mutate(age_cat = case_when(
@@ -238,17 +209,14 @@ ca_pop <- ca_pop %>%
   )
 
 unique(ca_pop$age_cat)
+unique(sim_ca$age_cat)
+unique(sim_la$age_cat)
 
 ```
 
+3) Standardize dates
 
-- Variables that may be useful for future joins (e.g., geographic variables)
-  - The LA County dataset (sim_la) will need to be merged into sim_ca, as sim_ca is currently missing LA County data.
-
-
--Cleaning and merging the datasets (Jackie)
-
-```{r standarize variables}
+```{r standarize date variables, echo=TRUE, results='hide'}
 
 library(lubridate)
 # Convert sim_ca date (YYYY-MM-DD)
@@ -262,76 +230,33 @@ sim_la <- sim_la %>%
 sim_la <- sim_la %>%
   rename(dt_diagnosis = dt_dx)
 
-#rename variables
-sim_la_clean <- sim_la %>%
-  rename(
-    cumulative_infected = infected_cumulative,
-    new_unrecovered = unrecovered_new,
-    cumulative_unrecovered = unrecovered_cumulative,
-    new_severe = severe_new, 
-    cumulative_severe = severe_cumulative
-  ) %>%
-  mutate(
-    county = "Los Angeles"
-  )
-
-#recategorize ethnicity so that datasets match each other
-sim_la_clean <- sim_la_clean %>%
-  mutate(
-    race_ethnicity = case_when(
-      race_ethnicity == "White, Non-Hispanic" ~ "WhiteTE NH",
-      race_ethnicity == "Black, Non-Hispanic" ~ "Black NH",
-      race_ethnicity == "American Indian or Alaska Native, Non-Hispanic" ~ "AIAN NH",
-      race_ethnicity == "Asian, Non-Hispanic" ~ "Asian NH",
-      race_ethnicity == "Native Hawaiian or Pacific Islander, Non-Hispanic" ~ "NHPI NH",
-      race_ethnicity == "Multiracial (two or more of above races), Non-Hispanic" ~ "MR NH",
-      race_ethnicity == "Hispanic (any race)" ~ "Hispanic",
-      TRUE ~ race_ethnicity
-    )
-  )
-
-sim_ca <- sim_ca %>%
-  mutate(
-    race_ethnicity = recode(
-      race_ethnicity,
-      "WhiteTE NH" = "White NH"
-    )
-  )
-
-sim_la_clean <- sim_la_clean %>%
-  mutate(
-    race_ethnicity = recode(
-      race_ethnicity,
-      "WhiteTE NH" = "White NH"
-    )
-  )
-
-ca_pop <- ca_pop %>%
-  mutate(
-    race_ethnicity = recode(
-      race_ethnicity,
-      "WhiteTE NH" = "White NH"
-    )
-    )
-
-
-
+unique(sim_ca$dt_diagnosis)
+unique(sim_la$dt_diagnosis)
 ```
 
+\newpage
+
+**5. Merge the datasets**
+
+1) Combine sim_ca and sim_la in one dataset
 
 ```{r combine infection databases}
 
 sim_combined <- bind_rows(
   sim_ca,
-  sim_la_clean
+  sim_la
 )
 
-glimpse(sim_combined)
+dim(sim_ca)
+dim(sim_la)
+dim(sim_combined)
 ```
 
+2) Join population dataset
 
+```{r join population dataset, echo=TRUE, results='hide'}
 
-```{r clean ca_pop data}
+# summarize ca_pop dataset before merging
 ca_pop_clean <- ca_pop %>%
   group_by(
     county,
@@ -343,13 +268,11 @@ ca_pop_clean <- ca_pop %>%
     population = sum(pop, na.rm = TRUE),
     .groups = "drop"
   )
-```
 
+glimpse(ca_pop_clean)
 
-
-```{r join population data}
-
-combined_data <- sim_combined %>%
+# combine all datasets into one dataset
+combined_df <- sim_combined %>%
   left_join(
     ca_pop_clean,
     by = c(
@@ -361,12 +284,20 @@ combined_data <- sim_combined %>%
     relationship = "many-to-one"
   )
 
+glimpse(combined_df)
+
 ```
 
-We've now created a combined dataset! However, there are extra variables that we don't need in order to answer our research question. I'm going clean up the dataset and simplify it to only include relevant information:
+\newpage
 
-```{r simplify combined dataset}
-combined_data_clean <- combined_data %>%
+**6. Data analysis**
+
+There are extra variables that we don't need in order to answer our research question. We simplified it to only include relevant information:
+
+1) Select relevant information
+
+```{r, echo=TRUE, results='hide'}
+selected_df <- combined_df %>%
   select(
     county,
     age_cat,
@@ -377,32 +308,273 @@ combined_data_clean <- combined_data %>%
     population
   )
 
+glimpse(selected_df)
 ```
 
-Now we can calculate infection rates: 
+2) Check missing values
 
-```{r Infection Rate}
+```{r}
+# check missing values
+colSums(is.na(selected_df))
 
-#Total infections per 100,000 population during the simulated outbreak
-infection_rates <- combined_data_clean %>%
+# check invalid values
+sum(selected_df$new_infections < 0, na.rm = TRUE)
+sum(selected_df$population <= 0, na.rm = TRUE)
+
+# count unique strata with invalid population values (<= 0)
+selected_df %>%
+  filter(population <= 0) %>%
+  distinct(county, age_cat, sex, race_ethnicity, population) %>%
+  nrow()
+
+```
+
+3) Create new variables
+
+- Create a month variable to examine monthly infection trends
+
+```{r}
+selected_df <- selected_df %>%
+  mutate(diagnosis_month = month(dt_diagnosis, label = TRUE, abbr = TRUE)) %>%
+  select(-dt_diagnosis)
+
+head(selected_df)
+```
+
+- Calculate infection rates
+
+```{r}
+aggregated_df <- selected_df %>%
   group_by(county, age_cat, sex, race_ethnicity) %>%
-  summarise(
+  summarize(
     total_infections = sum(new_infections, na.rm = TRUE),
     population = first(population),
     .groups = "drop"
   ) %>%
   mutate(
-    infection_rate = round(
-      total_infections / population * 100000, 1
+    infection_rate = if_else(
+      population > 0,
+      round(total_infections / population * 100000, 1),
+      NA_real_
+      )
     )
-  )
 
+head(aggregated_df)
 ```
 
-----------
-Our next meeting for Project Milestone #4 - Nov 18 at 7PM
 
-Ruby is inviting you to a scheduled Zoom meeting.
+\newpage
+
+**7. Data visualization**
+
+Some observations had a population value of zero across multiple counties. Since population is used as the denominator when calculating infection rates, these observations cannot produce a valid rate. Therefore, observations with a population value of zero were excluded from the graphs and rate calculations only. The original dataset was retained without deleting these observations.
+
+1) Monthly infection trend in California
+
+```{r, fig.height = 4}
+df_monthly <- selected_df %>%
+  filter(population > 0) %>%
+  group_by(diagnosis_month) %>%
+  summarize(total_infections = sum(new_infections, na.rm = TRUE),
+            .groups = "drop")
+
+ggplot(df_monthly,
+       aes(x = diagnosis_month, y = total_infections)) +
+  geom_col(fill = "steelblue", color = "white") +
+  labs(title = "Monthly New Infection Cases",
+       subtitle = "California, 2023",
+       x = "Month",
+       y = "Number of New Infections") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+2) Infection rate by county
+
+```{r, fig.width = 10, fig.height = 4}
+df_county <- aggregated_df %>%
+  filter(population > 0) %>%
+  group_by(county) %>%
+  summarize(total_infections = sum(total_infections),
+            population = sum(population),
+            .groups = "drop") %>%
+  mutate(
+    infection_rate = round
+    (total_infections/population * 100000, 1)
+         )
+
+ggplot(df_county,
+       aes(x = reorder(county, infection_rate), y = infection_rate)) +
+  geom_col(fill = "steelblue", color = "white") +
+  labs(title = "Infection rate by County",
+       subtitle = "California, 2023",
+       x = "County",
+       y = "Infections per 100,000 Population") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+```
+
+3) Infection rate by age group and sex
+
+```{r, fig.height = 4}
+df_age_sex <- aggregated_df %>%
+  filter(population > 0) %>%
+  group_by(age_cat, sex) %>%
+  summarize(total_infections = sum(total_infections),
+            population = sum(population),
+            .groups = "drop") %>%
+  mutate(
+    infection_rate = round
+    (total_infections/population * 100000, 1)
+         )
+
+ggplot(df_age_sex,
+       aes(x = reorder(age_cat, infection_rate),
+           y = infection_rate,
+           fill = sex)) +
+  geom_col(position = "dodge") +
+  scale_fill_brewer(palette = "Pastel1",
+                    labels = c("Female", "Male")) +
+  labs(
+    title = "Infection Rate by Age Group and Sex",
+    subtitle = "California, 2023",
+    x = "Age Group",
+    y = "Infections per 100,000 Populations"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)
+        )
+```
+
+4) Infection rate by race/ethnicity
+
+```{r, fig.height = 4}
+df_race <- aggregated_df %>%
+  filter(population > 0) %>%
+  group_by(race_ethnicity) %>%
+  summarize(
+    total_infections = sum(total_infections),
+    population = sum(population),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    infection_rate = round
+    (total_infections / population * 100000, 1)
+  )
+
+ggplot(df_race,
+       aes(x = reorder(race_ethnicity, infection_rate),
+           y = infection_rate)) +
+  geom_col(fill = "steelblue", color = "white") +
+  scale_x_discrete(labels = c(
+"White NH" = "White",
+"Black NH" = "Black",
+"AIAN NH" = "American Indian or\nAlaska Native",
+"Asian NH" = "Asian",
+"NHPI NH" = "Native Hawaiian or\nPacific Islander",
+"MR NH" = "Multiracial",
+"Hispanic" = "Hispanic"
+  )) +
+  labs(
+    title = "Infection Rate by Race/Ethnicity",
+    subtitle = "California, 2023",
+    x = "Race/Ethnicity",
+    y = "Infections per 100,000 Population"
+  ) +
+  coord_flip() +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+
+\newpage
+
+**8. Data Dictionary**
+
+1) Demographic information (county, age category, sex, race/ethnicity)
+
+```{r, echo=TRUE, results='hide'}
+str(selected_df)
+```
+
+```{r}
+data_dictionary <- tibble(
+  Variable_Name = c(
+    "county",
+    "age_cat",
+    "sex",
+    "race_ethnicity",
+    "new_infections",
+    "population",
+    "diagnosis_month"
+  ),
+  Data_Type = c(
+    "Character",
+    "Character",
+    "Character",
+    "Character",
+    "Integer",
+    "Integer",
+    "Ordered Factor"
+  ),
+  Description = c(
+    "California county where infections were reported",
+    "Age category of the population",
+    "Sex of the population",
+    "Race and ethnicity classification",
+    "Number of new infection cases",
+    "Population size for each demographic group",
+    "Month when infections were diagnosed"
+  ),
+  Constraints = c(
+    "Valid California county name",
+    "Standardized age categories",
+    "Female or Male",
+    "Standardized race/ethnicity categories",
+    "Non-negative integer",
+    "Positive integer",
+    "May through December in chronological order"
+  )
+)
+
+data_dictionary
+```
+
+2) Descriptive statistics (new infections, population)
+
+```{r}
+descriptive_stat <- selected_df %>%
+  summarize(
+    number_of_counties = n_distinct(county),
+    number_of_age_categories = n_distinct(age_cat),
+    number_of_race_ethnicity_categories = n_distinct(race_ethnicity),
+    mean_infections = mean(new_infections, na.rm = TRUE),,
+    median_infections = median(new_infections, na.rm = TRUE),
+    max_infections = max(new_infections, na.rm = TRUE),
+    mean_population = mean(population, na.rm = TRUE),
+    median_population = median(population, na.rm = TRUE)
+  ) %>%
+  pivot_longer(cols = everything(),
+               names_to = "statistics",
+               values_to = "value") %>%
+  mutate(value = round(value, 1))
+
+descriptive_stat
+```
+
+  - Relationships: How tables connect to one another
+
+
+
+
+
+
+\newpage
+
+
+Our next meeting for Project Milestone #4 - Nov 18 at 7PM
 
 Topic: Project Milestone #4
 Time: Nov 18, 2026 07:00 PM Pacific Time (US and Canada)
@@ -413,5 +585,4 @@ https://berkeley.zoom.us/j/96671657104?pwd=sxQruA1DQeK5HdXULbE8PS70RBlrQi.1
 Meeting ID: 966 7165 7104
 Passcode: 184467
 
-----------
 
