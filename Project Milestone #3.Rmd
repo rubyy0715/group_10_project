@@ -556,7 +556,7 @@ descriptive_stat <- selected_df %>%
 descriptive_stat %>% gt()
 ```
 
-4) Relationships and foundings
+4) Relationships and findings
   
 The four tables and graphs illustrate how the simulated infectious disease outbreak varied over time, geographically, and across demographic groups in California.
 
