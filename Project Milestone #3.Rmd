@@ -565,6 +565,16 @@ descriptive_stat
 ```
 
   - Relationships: How tables connect to one another
+  
+The four tables illustrate how the simulated infectious disease outbreak varied over time, geographically, and across demographic groups in California.
+
+Monthly new infections increased steadily from May through September, reaching their peak in September before declining in October and November. This pattern suggests that the outbreak intensified throughout the summer months before beginning to subside in the fall.
+
+County-level infection rates revealed geographic differences in disease burden. Imperial, Inyo, Kern, and Tulare counties had some of the highest infection rates per 100,000 residents. These counties generally have smaller populations than California's largest metropolitan counties, highlighting the importance of using population-adjusted infection rates rather than absolute case counts when comparing disease burden across geographic areas.
+
+Infection rates by age group and sex showed consistent demographic patterns. Males experienced slightly higher infection rates than females across every age category. Additionally, infection rates increased progressively with age, with each successive age group experiencing a higher rate than the preceding group. This suggests that older populations experienced a greater burden of infection during the simulated outbreak, regardless of sex.
+
+Together, these findings demonstrate that the simulated outbreak was not evenly distributed across California's population. While the monthly trends show when infections were most prevalent, the county and demographic analyses identify which populations experienced the highest infection rates. 
 
 
 
