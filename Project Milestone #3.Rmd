@@ -10,7 +10,9 @@ Project Milestone #3
 Scenario 1: Infectious disease outbreak (simulated) in California
 
 **1. Introduction**
+
 This project uses simulated infectious disease outbreak data from Scenario 1 of the PHW251 Project Data GitHub repository to examine the distribution of infections across California.
+
 Our primary research question is: How did infection rates during the outbreak vary by county, age, sex and race/ethnicity across California?
 
 The datasets include simulated morbidity data from California and Los Angeles County, containing information on new infection cases and individual demographic and geographic characteristics.
@@ -554,7 +556,7 @@ descriptive_stat <- selected_df %>%
 descriptive_stat %>% gt()
 ```
 
-3) Relationships and foundings
+4) Relationships and foundings
   
 The four tables and graphs illustrate how the simulated infectious disease outbreak varied over time, geographically, and across demographic groups in California.
 
