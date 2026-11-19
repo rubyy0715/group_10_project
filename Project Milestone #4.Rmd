@@ -13,19 +13,15 @@ Milestone #4 Objective - Visualizations complete
 Please submit an Rmd or Qmd and publish an html file on RPubs with the following:
 
 1. Final datasets for creation of visualization
-
 - Join all datasets together
 - Calculate any remaining data elements needed for analysis
 - Show code used to create joined dataset, but please do not print full data frame output (showing data structure with str() is okay)
 
 2. Visualizations (at least one per group member)
-
 - One print quality table as requested in scenario
 - One print quality plot or chart as requested in scenario
-- For groups of 3, one additional print quality table or plot of your choice (can support the requested data in the scenario, or answer a different question using the same data sources)
 
 3. For each visual, include
-
 - Code used to generate visual
 - Legend (if necessary)
 - 1-2 sentence interpretation
@@ -34,7 +30,6 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
   - Please also make sure column names, axis labels, and any other labels are meaningful and not just the name of the variable (ex: "County" rather than "county_name")
   
 4. Html file that is professionally prepared for presentation and published to RPubs
-
 - Only the necessary information is in the output (e.g., suppress entire data frame outputs but showing data structure with str() is okay.
 - Code used to import and clean data (milestones 2 and 3) can be included in the rmd/qmd but please use the option include=FALSE in order to prevent the code and any output from. Code chunk would look like {r chunk_name, include=FALSE}
 - Utilize warning=FALSE and message=FALSE to suppress any warnings/messages that may be displaying from any chunks
@@ -43,18 +38,15 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
 
 --------------------------------------------------------------------------------
 
-Scenario 1: Infectious disease outbreak (simulated) in California
-
 **1. Introduction**
 
-This project uses simulated infectious disease outbreak data from Scenario 1 of the PHW251 Project Data GitHub repository to examine the distribution of infections across California.
+- This project uses simulated infectious disease outbreak data from < Scenario 1: Infectious disease outbreak in California > of the PHW251 Project Data GitHub repository to examine the distribution of infections across California.
 
-Our primary research question is: How did infection rates during the outbreak vary by county, age, sex and race/ethnicity across California?
+- Our primary research question is: How did infection rates during the outbreak vary by county, age, sex and race/ethnicity across California?
 
-The datasets include simulated morbidity data from California and Los Angeles County, containing information on new infection cases and individual demographic and geographic characteristics.
-Additionally, the analysis incorporates 2023 California Department of Finance population estimates. This dataset provide the denominators needed to calculate infection rates per 100,000 population, allowing for more meaningful comparisons across demographic and geographic groups.
+- The datasets include simulated morbidity data from California and Los Angeles County, containing information on new infection cases and individual demographic and geographic characteristics. Additionally, the analysis incorporates 2023 California Department of Finance population estimates. This dataset provide the denominators needed to calculate infection rates per 100,000 population, allowing for more meaningful comparisons across demographic and geographic groups.
 
-By combining morbidity and population data, this project aims to identify variations in infection rates across California counties and demographic groups during the simulated outbreak.
+- By combining morbidity and population data, this project aims to identify variations in infection rates across California counties and demographic groups during the simulated outbreak.
 
 **2. Import dataset**
 
@@ -86,24 +78,15 @@ sim_la <- sim_la %>%
 **3. Data types and variables**
 
 ```{r, echo=TRUE, results='hide'}
-
 # Identify all the variables in each dataset
 sapply(ca_pop, class)
 sapply(sim_ca, class)
 sapply(sim_la, class)
-
 ```
 
-We chose the following variables:
-  - county
-  - age_cat
-  - sex
-  - race_ethnicity
-  - new_infections
-  - population
-  - dt_dignosis
+1) We chose the following variables: county, age_cat, sex, race_ethnicity, new_infections, population, dt_diagnosis
 
-Desired data types for analysis:
+2) Desired data types for analysis:
   - county, age category, sex, race/ethnicity, dt_diagnosis: character/categorical
   - population and new infections: integer/numeric
 
@@ -191,7 +174,6 @@ ca_pop <- ca_pop %>%
     age_cat %in% c("0-4", "5-11", "12-17") ~ "0-17",
     .default = age_cat)
   )
-
 ```
 
 3) Standardize dates
@@ -296,7 +278,6 @@ selected_df %>%
   filter(population <= 0) %>%
   distinct(county, age_cat, sex, race_ethnicity, population) %>%
   nrow()
-
 ```
 
 3) Create new variables
