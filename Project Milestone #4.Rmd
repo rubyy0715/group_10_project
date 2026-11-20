@@ -13,9 +13,9 @@ Milestone #4 Objective - Visualizations complete
 Please submit an Rmd or Qmd and publish an html file on RPubs with the following:
 
 1. Final datasets for creation of visualization
-- Join all datasets together
-- Calculate any remaining data elements needed for analysis
-- Show code used to create joined dataset, but please do not print full data frame output (showing data structure with str() is okay)
+- Join all datasets together (+)
+- Calculate any remaining data elements needed for analysis (+)
+- Show code used to create joined dataset, but please do not print full data frame output (showing data structure with str() is okay) (+)
 
 2. Visualizations (at least one per group member)
 - One print quality table as requested in scenario
@@ -30,10 +30,10 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
   - Please also make sure column names, axis labels, and any other labels are meaningful and not just the name of the variable (ex: "County" rather than "county_name")
   
 4. Html file that is professionally prepared for presentation and published to RPubs
-- Only the necessary information is in the output (e.g., suppress entire data frame outputs but showing data structure with str() is okay.
-- Code used to import and clean data (milestones 2 and 3) can be included in the rmd/qmd but please use the option include=FALSE in order to prevent the code and any output from. Code chunk would look like {r chunk_name, include=FALSE}
-- Utilize warning=FALSE and message=FALSE to suppress any warnings/messages that may be displaying from any chunks
-- For this milestone please make sure code for visualizations are included in the final file. Show your work by "echoing" code used in Rmd/Qmd file to create your tables and graphs. ```{r, echo = TRUE} in code chunk preferences.
+- Only the necessary information is in the output (e.g., suppress entire data frame outputs but showing data structure with str() is okay. - Ruby
+- Code used to import and clean data (milestones 2 and 3) can be included in the rmd/qmd but please use the option include=FALSE in order to prevent the code and any output from. Code chunk would look like {r chunk_name, include=FALSE} - Ruby
+- Utilize warning=FALSE and message=FALSE to suppress any warnings/messages that may be displaying from any chunks - Ruby
+- For this milestone please make sure code for visualizations are included in the final file. Show your work by "echoing" code used in Rmd/Qmd file to create your tables and graphs. ```{r, echo = TRUE} in code chunk preferences. - Ruby
 - Use headers and sub headers to create an organized document
 
 --------------------------------------------------------------------------------
@@ -50,10 +50,12 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
 
 **2. Import dataset**
 
-```{r, echo=TRUE, results='hide'}
+```{r, include=FALSE}
 library(tidyverse)
 library(janitor)
 library(gt)
+library(knitr)
+library(kableExtra)
 
 #import datasets
 getwd()
@@ -70,14 +72,13 @@ sim_ca <- sim_ca %>%
 
 sim_la <- sim_la %>%
   clean_names()
-
 ```
 
 \newpage
 
 **3. Data types and variables**
 
-```{r, echo=TRUE, results='hide'}
+```{r, include=FALSE}
 # Identify all the variables in each dataset
 sapply(ca_pop, class)
 sapply(sim_ca, class)
@@ -98,8 +99,7 @@ sapply(sim_la, class)
 
 - Rename columns
 
-```{r rename columns, echo=TRUE, results='hide'}
-
+```{r rename columns, include=FALSE}
 ca_pop <- ca_pop %>% rename(race_ethnicity = race7)
 
 sim_la <- sim_la %>% rename(new_infections = dx_new,
@@ -112,17 +112,13 @@ sim_la <- sim_la %>%
     new_unrecovered = unrecovered_new,
     cumulative_unrecovered = unrecovered_cumulative,
     new_severe = severe_new, 
-    cumulative_severe = severe_cumulative
-  ) %>%
-  mutate(
-    county = "Los Angeles"
-  )
+    cumulative_severe = severe_cumulative) %>%
+  mutate(county = "Los Angeles")
 ```
 
 - Race/ethnicity
 
-```{r convert race/ethnicity, echo=TRUE, results='hide'}
-
+```{r convert race/ethnicity, include=FALSE}
 sim_ca <- sim_ca %>% mutate(
   race_ethnicity = case_when(
     race_ethnicity == 1 ~ "White NH",
@@ -131,9 +127,7 @@ sim_ca <- sim_ca %>% mutate(
     race_ethnicity == 4 ~ "Asian NH",
     race_ethnicity == 5 ~ "NHPI NH",
     race_ethnicity == 6 ~ "MR NH",
-    race_ethnicity == 7 ~ "Hispanic"
-    )
-  )
+    race_ethnicity == 7 ~ "Hispanic"))
 
 sim_la <- sim_la %>%
   mutate(
@@ -145,42 +139,35 @@ sim_la <- sim_la %>%
       race_ethnicity == "Native Hawaiian or Pacific Islander, Non-Hispanic" ~ "NHPI NH",
       race_ethnicity == "Multiracial (two or more of above races), Non-Hispanic" ~ "MR NH",
       race_ethnicity == "Hispanic (any race)" ~ "Hispanic",
-      TRUE ~ race_ethnicity
-    ))
+      TRUE ~ race_ethnicity))
 
 ca_pop <- ca_pop %>%
   mutate(
     race_ethnicity = recode(
       race_ethnicity,
-      "WhiteTE NH" = "White NH"
-    )
-  )
+      "WhiteTE NH" = "White NH"))
 ```
 
 - County names
 
-```{r convert county names, echo=TRUE, results='hide'}
-
+```{r convert county names, include=FALSE}
 sim_ca$county <- str_remove(sim_ca$county, " County$")
-
 ```
 
 2) Recategorize age groups
 
-```{r recategorize age groups}
-
+```{r recategorize age groups, include=FALSE}
 ca_pop <- ca_pop %>%
   mutate(age_cat = case_when(
     age_cat %in% c("0-4", "5-11", "12-17") ~ "0-17",
-    .default = age_cat)
-  )
+    .default = age_cat))
 ```
 
 3) Standardize dates
 
-```{r standarize date variables, echo=TRUE, results='hide'}
-
+```{r standarize date variables, include=FALSE}
 library(lubridate)
+
 # Convert sim_ca date (YYYY-MM-DD)
 sim_ca <- sim_ca %>%
   mutate(dt_diagnosis = ymd(dt_diagnosis))
@@ -200,42 +187,21 @@ sim_la <- sim_la %>%
 1) Combine sim_ca and sim_la in one dataset
 
 ```{r combine infection databases}
-
-sim_combined <- bind_rows(
-  sim_ca,
-  sim_la
-)
+sim_combined <- bind_rows(sim_ca, sim_la)
 ```
 
 2) Join population dataset
 
-```{r join population dataset, echo=TRUE, results='hide'}
-
+```{r join population dataset, eval=FALSE}
 # summarize ca_pop dataset before merging
 ca_pop_clean <- ca_pop %>%
-  group_by(
-    county,
-    age_cat,
-    sex,
-    race_ethnicity
-  ) %>%
-  summarise(
-    population = sum(pop, na.rm = TRUE),
-    .groups = "drop"
-  )
+  group_by(county, age_cat, sex, race_ethnicity) %>%
+  summarise(population = sum(pop, na.rm = TRUE), .groups = "drop")
 
 # combine all datasets into one dataset
 combined_df <- sim_combined %>%
-  left_join(
-    ca_pop_clean,
-    by = c(
-      "county",
-      "age_cat",
-      "sex",
-      "race_ethnicity"
-    ),
-    relationship = "many-to-one"
-  )
+  left_join(ca_pop_clean, by = c("county", "age_cat", "sex", "race_ethnicity"),
+    relationship = "many-to-one")
 
 str(combined_df)
 ```
@@ -248,24 +214,17 @@ There are extra variables that we don't need in order to answer our research que
 
 1) Select relevant information
 
-```{r, echo=TRUE, results='hide'}
+```{r, eval=FALSE}
 selected_df <- combined_df %>%
-  select(
-    county,
-    age_cat,
-    sex,
-    race_ethnicity,
-    dt_diagnosis,
-    new_infections,
-    population
-  )
+  select(county, age_cat, sex, race_ethnicity,
+    dt_diagnosis, new_infections, population)
 
 str(selected_df)
 ```
 
 2) Check missing values
 
-```{r}
+```{r, eval=FALSE}
 # check missing values
 colSums(is.na(selected_df))
 
@@ -284,7 +243,7 @@ selected_df %>%
 
 - Create a month variable to examine monthly infection trends
 
-```{r}
+```{r, eval=FALSE}
 selected_df <- selected_df %>%
   mutate(diagnosis_month = month(dt_diagnosis, label = TRUE, abbr = TRUE)) %>%
   select(-dt_diagnosis)
@@ -294,21 +253,18 @@ head(selected_df)
 
 - Calculate infection rates
 
-```{r}
+```{r, eval=FALSE}
 aggregated_df <- selected_df %>%
   group_by(county, age_cat, sex, race_ethnicity) %>%
   summarize(
     total_infections = sum(new_infections, na.rm = TRUE),
     population = first(population),
-    .groups = "drop"
-  ) %>%
+    .groups = "drop") %>%
   mutate(
     infection_rate = if_else(
       population > 0,
       round(total_infections / population * 100000, 1),
-      NA_real_
-      )
-    )
+      NA_real_))
 
 head(aggregated_df)
 ```
@@ -328,7 +284,11 @@ df_monthly <- selected_df %>%
   summarize(total_infections = sum(new_infections, na.rm = TRUE),
             .groups = "drop")
 
-df_monthly %>% gt()
+df_monthly %>% kable(
+  col.names = c("Diagnosis Month", "Total Infections")) %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "center")
 
 ggplot(df_monthly,
        aes(x = diagnosis_month, y = total_infections)) +
@@ -377,11 +337,16 @@ df_age_sex <- aggregated_df %>%
             population = sum(population),
             .groups = "drop") %>%
   mutate(
-    infection_rate = round
-    (total_infections/population * 100000, 1)
+    infection_rate = round(total_infections/population * 100000, 1),
+    sex = str_to_title(sex)
          )
 
-df_age_sex %>% gt()
+df_age_sex %>%  kable(
+  col.names = c("Age Category", "Total Infections", "Sex",
+                "Population", "Infection Rate")) %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "center")
 
 ggplot(df_age_sex,
        aes(x = reorder(age_cat, infection_rate),
@@ -413,25 +378,28 @@ df_race <- aggregated_df %>%
     .groups = "drop"
   ) %>%
   mutate(
-    infection_rate = round
-    (total_infections / population * 100000, 1)
+    infection_rate = round(total_infections / population * 100000, 1),
+    race_ethnicity = case_when(
+      race_ethnicity == "White NH" ~ "White",
+      race_ethnicity == "Black NH" ~ "Black",
+      race_ethnicity == "AIAN NH" ~ "American Indian or Alaska Native",
+      race_ethnicity == "Asian NH" ~ "Asian",
+      race_ethnicity == "NHPI NH" ~ "Native Hawaiian or Pacific Islander",
+      race_ethnicity == "MR NH" ~ "Multiracial",
+      race_ethnicity == "Hispanic" ~ "Hispanic")
   )
 
-df_race %>% gt()
+df_race %>% kable(
+  col.names = c("Race/Ethnicity", "Total Infections",
+                "Population", "Infection Rate")) %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "center")
 
 ggplot(df_race,
        aes(x = reorder(race_ethnicity, infection_rate),
            y = infection_rate)) +
   geom_col(fill = "steelblue", color = "white") +
-  scale_x_discrete(labels = c(
-"White NH" = "White",
-"Black NH" = "Black",
-"AIAN NH" = "American Indian or\nAlaska Native",
-"Asian NH" = "Asian",
-"NHPI NH" = "Native Hawaiian or\nPacific Islander",
-"MR NH" = "Multiracial",
-"Hispanic" = "Hispanic"
-  )) +
   labs(
     title = "Infection Rate by Race/Ethnicity",
     subtitle = "California, 2023",
@@ -471,7 +439,7 @@ ggplot(df_race,
 
 2) Demographic information (county, age category, sex, race/ethnicity)
 
-```{r, echo=TRUE, results='hide'}
+```{r, eval=FALSE}
 str(selected_df)
 ```
 
@@ -494,7 +462,7 @@ data_dictionary <- tibble(
     "Character",
     "Integer",
     "Integer",
-    "Ordered Factor"
+    "Ordered factor"
   ),
   Description = c(
     "California county where infections were reported",
@@ -516,7 +484,11 @@ data_dictionary <- tibble(
   )
 )
 
-data_dictionary %>% gt()
+data_dictionary %>% kable(
+  col.names = c("Variable Name", "Data Type", "Description", "Constraints")) %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "center")
 ```
 
 3) Descriptive statistics (new infections, population)
@@ -538,7 +510,11 @@ descriptive_stat <- selected_df %>%
                values_to = "value") %>%
   mutate(value = round(value, 1))
 
-descriptive_stat %>% gt()
+descriptive_stat %>% kable(
+  col.names = c("Statistics", "Value")) %>%
+  kable_styling(bootstrap_options = "striped",
+                full_width = FALSE,
+                position = "center")
 ```
 
 4) Relationships and findings
