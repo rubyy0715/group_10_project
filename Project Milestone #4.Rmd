@@ -40,13 +40,9 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
 
 **1. Introduction**
 
-- This project uses simulated infectious disease outbreak data from < Scenario 1: Infectious disease outbreak in California > of the PHW251 Project Data GitHub repository to examine the distribution of infections across California.
+This project investigates the geographic and demographic distribution of a simulated infectious disease outbreak across California, utilizing data from Scenario 1: Infectious disease outbreak in California in the PHW251 Project Data repository. Specifically, our primary research question is: **How did infection rates during the outbreak vary by county, age, sex, and race/ethnicity across California?**
 
-- Our primary research question is: How did infection rates during the outbreak vary by county, age, sex and race/ethnicity across California?
-
-- The datasets include simulated morbidity data from California and Los Angeles County, containing information on new infection cases and individual demographic and geographic characteristics. Additionally, the analysis incorporates 2023 California Department of Finance population estimates. This dataset provide the denominators needed to calculate infection rates per 100,000 population, allowing for more meaningful comparisons across demographic and geographic groups.
-
-- By combining morbidity and population data, this project aims to identify variations in infection rates across California counties and demographic groups during the simulated outbreak.
+To answer this question, we use simulated morbidity datasets for California and Los Angeles County, which include case counts along with individual demographic and geographic details. We also incorporate 2023 population estimates from the California Department of Finance. These population estimates provide the denominators needed to calculate infection rates per 100,000 population, allowing us to make meaningful comparisons across groups of different sizes. By combining morbidity and population data, this project aims to identify key demographic and geographic differences in infection rates during the outbreak.
 
 **2. Import dataset**
 
@@ -192,7 +188,7 @@ sim_combined <- bind_rows(sim_ca, sim_la)
 
 2) Join population dataset
 
-```{r join population dataset, eval=FALSE}
+```{r join population dataset, results='hide'}
 # summarize ca_pop dataset before merging
 ca_pop_clean <- ca_pop %>%
   group_by(county, age_cat, sex, race_ethnicity) %>%
@@ -214,7 +210,7 @@ There are extra variables that we don't need in order to answer our research que
 
 1) Select relevant information
 
-```{r, eval=FALSE}
+```{r, results='hide'}
 selected_df <- combined_df %>%
   select(county, age_cat, sex, race_ethnicity,
     dt_diagnosis, new_infections, population)
@@ -224,7 +220,7 @@ str(selected_df)
 
 2) Check missing values
 
-```{r, eval=FALSE}
+```{r, results='hide'}
 # check missing values
 colSums(is.na(selected_df))
 
@@ -243,7 +239,7 @@ selected_df %>%
 
 - Create a month variable to examine monthly infection trends
 
-```{r, eval=FALSE}
+```{r, results='hide'}
 selected_df <- selected_df %>%
   mutate(diagnosis_month = month(dt_diagnosis, label = TRUE, abbr = TRUE)) %>%
   select(-dt_diagnosis)
@@ -253,7 +249,7 @@ head(selected_df)
 
 - Calculate infection rates
 
-```{r, eval=FALSE}
+```{r, results='hide'}
 aggregated_df <- selected_df %>%
   group_by(county, age_cat, sex, race_ethnicity) %>%
   summarize(
@@ -439,7 +435,7 @@ ggplot(df_race,
 
 2) Demographic information (county, age category, sex, race/ethnicity)
 
-```{r, eval=FALSE}
+```{r, include=FALSE}
 str(selected_df)
 ```
 
@@ -528,6 +524,8 @@ County-level infection rates revealed geographic differences in disease burden. 
 Infection rates by age group and sex showed consistent demographic patterns. Males experienced slightly higher infection rates than females across every age category. Additionally, infection rates increased progressively with age, with each successive age group experiencing a higher rate than the preceding group. This suggests that older populations experienced a greater burden of infection during the simulated outbreak, regardless of sex.
 
 Together, these findings demonstrate that the simulated outbreak was not evenly distributed across California's population. While the monthly trends show when infections were most prevalent, the county and demographic analyses identify which populations experienced the highest infection rates. 
+
+
 
 
 
