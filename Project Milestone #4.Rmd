@@ -303,6 +303,8 @@ ggplot(df_monthly,
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
+In the bar graph above we see that monthly new infections increased steadily from May through September, reaching their peak in September before declining in October and November. This pattern suggests that the outbreak intensified throughout the summer months before beginning to subside in the fall.
+
 
 2) Infection rate by county
 
@@ -330,6 +332,8 @@ ggplot(df_county,
         plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
+
+County-level infection rates revealed geographic differences in disease burden. Imperial, Inyo, Kern, and Tulare counties had some of the highest infection rates per 100,000 residents. These counties generally have smaller populations than California's largest metropolitan counties, highlighting the importance of using population-adjusted infection rates rather than absolute case counts when comparing disease burden across geographic areas. 
 
 3) Infection rate by age group and sex
 
@@ -369,6 +373,7 @@ ggplot(df_age_sex,
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
+The bar graph above shows consistent demographic patterns. Males experienced slightly higher infection rates than females across every age category. Additionally, infection rates increased progressively with age, with each successive age group experiencing a higher rate than the preceding group. This suggests that older populations experienced a greater burden of infection during the simulated outbreak, regardless of sex.
 
 4) Infection rate by race/ethnicity
 
@@ -415,6 +420,7 @@ ggplot(df_race,
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
         plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
+The bar graph above provides an additional perspective on the distribution of infections across California's population by race/ethnicity. Comparing these rates helps identify differences in disease burden between racial and ethnic groups and complements the geographic and age/sex analyses.
 
 \newpage
 
