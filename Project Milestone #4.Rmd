@@ -286,15 +286,22 @@ df_monthly %>% kable(
                 full_width = FALSE,
                 position = "center")
 
+peak_month <- max(df_monthly$total_infections)
+
 ggplot(df_monthly,
        aes(x = diagnosis_month, y = total_infections)) +
-  geom_col(fill = "steelblue", color = "white") +
+  geom_col(
+    aes(fill = ifelse(total_infections == peak_month, "peak", "other")),
+           color = "white") +
+  scale_fill_manual(values = c("peak" = "midnightblue", "other" = "steelblue"),
+                    guide = "none") +
   labs(title = "Monthly New Infection Cases",
        subtitle = "California, 2023",
        x = "Month",
        y = "Number of New Infections") +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
 
 2) Infection rate by county
@@ -320,7 +327,8 @@ ggplot(df_county,
        y = "Infections per 100,000 Population") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
 
 3) Infection rate by age group and sex
@@ -358,8 +366,8 @@ ggplot(df_age_sex,
     y = "Infections per 100,000 Populations"
   ) +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5)
-        )
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
 
 4) Infection rate by race/ethnicity
@@ -404,9 +412,8 @@ ggplot(df_race,
   ) +
   coord_flip() +
   theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5)
-  )
+  theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 11))
 ```
 
 \newpage
@@ -440,7 +447,7 @@ str(selected_df)
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 data_dictionary <- tibble(
   Variable_Name = c(
     "county",
@@ -489,7 +496,7 @@ data_dictionary %>% kable(
 
 3) Descriptive statistics (new infections, population)
 
-```{r}
+```{r, echo=FALSE}
 descriptive_stat <- selected_df %>%
   summarize(
     number_of_counties = n_distinct(county),
