@@ -24,10 +24,10 @@ Please submit an Rmd or Qmd and publish an html file on RPubs with the following
 3. For each visual, include
 - Code used to generate visual
 - Legend (if necessary)
-- 1-2 sentence interpretation
+- 1-2 sentence interpretation *** for each graph
 - NOTE:
-  - Please make sure the visual can stand-alone, meaning it includes enough information in title, legend, and footnote so that a person who sees only the visualization could understand what is being presented.
-  - Please also make sure column names, axis labels, and any other labels are meaningful and not just the name of the variable (ex: "County" rather than "county_name")
+  - Please make sure the visual can stand-alone, meaning it includes enough information in title, legend, and footnote *** - the sources so that a person who sees only the visualization could understand what is being presented.
+  - Please also make sure column names, axis labels, and any other labels are meaningful and not just the name of the variable (ex: "County" rather than "county_name") (+)
   
 4. Html file that is professionally prepared for presentation and published to RPubs
 - Only the necessary information is in the output (e.g., suppress entire data frame outputs but showing data structure with str() is okay. - Ruby
