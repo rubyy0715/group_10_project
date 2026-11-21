@@ -1,42 +1,13 @@
 ---
-title: 'Project Milestone #4'
+title: 'Project Milestone #4 - Visualizations'
 author: "Group 10: Ruby Yun, Jackie Zintel"
 output: html_document
-date: "2026-11-19"
+date: "2026-11-21"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
-
-Milestone #4 Objective - Visualizations complete
-Please submit an Rmd or Qmd and publish an html file on RPubs with the following:
-
-1. Final datasets for creation of visualization
-- Join all datasets together (+)
-- Calculate any remaining data elements needed for analysis (+)
-- Show code used to create joined dataset, but please do not print full data frame output (showing data structure with str() is okay) (+)
-
-2. Visualizations (at least one per group member)
-- One print quality table as requested in scenario
-- One print quality plot or chart as requested in scenario
-
-3. For each visual, include
-- Code used to generate visual
-- Legend (if necessary)
-- 1-2 sentence interpretation *** for each graph
-- NOTE:
-  - Please make sure the visual can stand-alone, meaning it includes enough information in title, legend, and footnote *** - the sources so that a person who sees only the visualization could understand what is being presented.
-  - Please also make sure column names, axis labels, and any other labels are meaningful and not just the name of the variable (ex: "County" rather than "county_name") (+)
-  
-4. Html file that is professionally prepared for presentation and published to RPubs
-- Only the necessary information is in the output (e.g., suppress entire data frame outputs but showing data structure with str() is okay. - Ruby
-- Code used to import and clean data (milestones 2 and 3) can be included in the rmd/qmd but please use the option include=FALSE in order to prevent the code and any output from. Code chunk would look like {r chunk_name, include=FALSE} - Ruby
-- Utilize warning=FALSE and message=FALSE to suppress any warnings/messages that may be displaying from any chunks - Ruby
-- For this milestone please make sure code for visualizations are included in the final file. Show your work by "echoing" code used in Rmd/Qmd file to create your tables and graphs. ```{r, echo = TRUE} in code chunk preferences. - Ruby
-- Use headers and sub headers to create an organized document
-
---------------------------------------------------------------------------------
 
 **1. Introduction**
 
@@ -298,12 +269,17 @@ ggplot(df_monthly,
   labs(title = "Monthly New Infection Cases",
        subtitle = "California, 2023",
        x = "Month",
-       y = "Number of New Infections") +
+       y = "Number of New Infections",
+       caption = 
+      "Source: Simulated California infectious disease surveillance data") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-        plot.subtitle = element_text(hjust = 0.5, size = 11))
+        plot.subtitle = element_text(hjust = 0.5, size = 11),
+        plot.caption = element_text(size = 8, hjust = 1))
 ```
-In the bar graph above we see that monthly new infections increased steadily from May through September, reaching their peak in September before declining in October and November. This pattern suggests that the outbreak intensified throughout the summer months before beginning to subside in the fall.
+
+
+**Interpretation:** The bar graph shows that monthly new infections increased steadily from May through September, reaching their peak in September before declining in October and November. This pattern suggests that the outbreak intensified throughout the summer months and began to subside in the fall.
 
 
 2) Infection rate by county
@@ -326,14 +302,18 @@ ggplot(df_county,
   labs(title = "Infection rate by County",
        subtitle = "California, 2023",
        x = "County",
-       y = "Infections per 100,000 Population") +
+       y = "Infections per 100,000 Population",
+       caption = 
+      "Source: Simulated California infectious disease surveillance data") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-        plot.subtitle = element_text(hjust = 0.5, size = 11))
+        plot.subtitle = element_text(hjust = 0.5, size = 11),
+        plot.caption = element_text(size = 8, hjust = 1))
 ```
 
-County-level infection rates revealed geographic differences in disease burden. Imperial, Inyo, Kern, and Tulare counties had some of the highest infection rates per 100,000 residents. These counties generally have smaller populations than California's largest metropolitan counties, highlighting the importance of using population-adjusted infection rates rather than absolute case counts when comparing disease burden across geographic areas. 
+
+**Interpretation:** County-level infection rates revealed geographic differences in disease burden across Califronia. Imperial, Inyo, Kern, and Tulare counties had some of the highest infection rates per 100,000 residents. This highlights the importance of using population-adjusted infection rates rather than absolute case counts when comparing disease burden across counties, as counties with smaller populations may have relatively high infection rates despite having fewer total cases.
 
 3) Infection rate by age group and sex
 
@@ -367,13 +347,18 @@ ggplot(df_age_sex,
     title = "Infection Rate by Age Group and Sex",
     subtitle = "California, 2023",
     x = "Age Group",
-    y = "Infections per 100,000 Populations"
+    y = "Infections per 100,000 Populations",
+    caption = 
+    "Source: Simulated California infectious disease surveillance data"
   ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-        plot.subtitle = element_text(hjust = 0.5, size = 11))
+        plot.subtitle = element_text(hjust = 0.5, size = 11),
+        plot.caption = element_text(size = 8, hjust = 1))
 ```
-The bar graph above shows consistent demographic patterns. Males experienced slightly higher infection rates than females across every age category. Additionally, infection rates increased progressively with age, with each successive age group experiencing a higher rate than the preceding group. This suggests that older populations experienced a greater burden of infection during the simulated outbreak, regardless of sex.
+
+
+**Interpretation:** The bar graph shows consistent demographic patterns in infection rates. Males experienced slightly higher infection rates than females across age categories. Additionally, infection rates increased progressively with age, with older age groups generally experiencing higher rates than younger groups. This suggests that older populations experienced a greater burden of infection during the simulated outbreak, regardless of sex.
 
 4) Infection rate by race/ethnicity
 
@@ -413,14 +398,19 @@ ggplot(df_race,
     title = "Infection Rate by Race/Ethnicity",
     subtitle = "California, 2023",
     x = "Race/Ethnicity",
-    y = "Infections per 100,000 Population"
+    y = "Infections per 100,000 Population",
+    caption = 
+   "Source: Simulated California infectious disease surveillance data"
   ) +
   coord_flip() +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-        plot.subtitle = element_text(hjust = 0.5, size = 11))
+        plot.subtitle = element_text(hjust = 0.5, size = 11),
+        plot.caption = element_text(size = 8, hjust = 1))
 ```
-The bar graph above provides an additional perspective on the distribution of infections across California's population by race/ethnicity. Comparing these rates helps identify differences in disease burden between racial and ethnic groups and complements the geographic and age/sex analyses.
+
+
+**Interpretation:** The bar graph shows differences in infection rates across racial and ethnic groups in California. American Indian or Alaska Native populations had the highest infection rates, followed by White and Black populations, while multiracial populations had the lowest rates. These findings highlight differences in disease burden across racial and ethnic groups.
 
 \newpage
 
